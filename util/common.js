@@ -50,7 +50,7 @@ const generateRestaurantToken = async (restaurant) => {
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: "10m",
+      expiresIn: "30s",
     }
   );
 
@@ -71,7 +71,7 @@ const generateUserToken = async (user) => {
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: "10m",
+      expiresIn: "30s",
     }
   );
 

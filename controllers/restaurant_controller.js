@@ -48,6 +48,26 @@ class RestaurantController {
       failure(res, 500, "Failed to get data", "Internal Server Issue");
     }
   }
+
+  async getRestaurantById(req, res) {
+    try {
+      const { restaurantId } = req.params;
+      RestaurantModel.findOne({ _id: restaurantId })
+        .then((restaurant) => {
+          return success(res, "Successfully Received.", restaurant);
+        })
+        .catch((error) => {
+          return failure(
+            res,
+            400,
+            "Failed to get data",
+            "Restaurant not found"
+          );
+        });
+    } catch (err) {
+      return failure(res, 500, "Failed to get data", "Internal server error");
+    }
+  }
 }
 
 module.exports = new RestaurantController();

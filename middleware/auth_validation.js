@@ -181,10 +181,16 @@ function validateToken(req, res, next) {
     if (verifyToken) {
       next();
     } else {
-      return failure(res, 500, "Error Occurred", "Authentication required");
+      throw new Error();
     }
   } catch (err) {
-    return failure(res, 500, "Error Occurred", "Authentication required");
+    if (err instanceof jwt.TokenExpiredError) {
+      return failure(res, 401, "Error Occurred", "Login again");
+    }
+    if (err instanceof jwt.JsonWebTokenError) {
+      return failure(res, 401, "Error Occurred", "Authentication required");
+    }
+    return failure(res, 401, "Error Occurred", "Authentication required");
   }
 }
 
@@ -207,10 +213,51 @@ function validateUserToken(req, res, next) {
         return failure(res, 500, "Error Occurred", "Authentication required");
       }
     } else {
-      return failure(res, 500, "Error Occurred", "Authentication required");
+      throw new Error();
     }
   } catch (err) {
-    return failure(res, 500, "Error Occurred", "Authentication required");
+    if (err instanceof jwt.TokenExpiredError) {
+      return failure(res, 401, "Error Occurred", "Login again");
+    }
+    if (err instanceof jwt.JsonWebTokenError) {
+      return failure(res, 401, "Error Occurred", "Authentication required");
+    }
+    return failure(res, 401, "Error Occurred", "Authentication required");
+  }
+}
+
+function validateRestaurantViewToken(req, res, next) {
+  const authHeader = req.header("Authorization");
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return failure(res, 401, "Error Occurred", "Authentication required");
+  }
+
+  const token = authHeader.substring(7);
+
+  try {
+    const verifyToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const { restaurantId } = req.params;
+
+    if (verifyToken) {
+      if (verifyToken.role === "user") {
+        next();
+      } else if (verifyToken.restaurant._id === restaurantId) {
+        next();
+      } else {
+        return failure(res, 500, "Error Occurred", "Authentication required");
+      }
+    } else {
+      throw new Error();
+    }
+  } catch (err) {
+    if (err instanceof jwt.TokenExpiredError) {
+      return failure(res, 401, "Error Occurred", "Login again");
+    }
+    if (err instanceof jwt.JsonWebTokenError) {
+      return failure(res, 401, "Error Occurred", "Authentication required");
+    }
+    return failure(res, 401, "Error Occurred", "Authentication required");
   }
 }
 
@@ -219,4 +266,5 @@ module.exports = {
   validateLoginData,
   validateToken,
   validateUserToken,
+  validateRestaurantViewToken,
 };

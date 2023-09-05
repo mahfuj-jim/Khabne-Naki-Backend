@@ -27,7 +27,6 @@ class RestaurantController {
       }
 
       RestaurantModel.find(filters)
-        // .select("-password -id")
         .then((restaurantData) => {
           const startIndex = (page - 1) * pageSize;
           const endIndex = startIndex + pageSize;

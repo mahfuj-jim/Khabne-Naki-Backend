@@ -1,4 +1,9 @@
 const validator = require("validator");
+const { failure } = require("../util/common.js");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 function validateSignupData(req, res, next) {
   const { role } = JSON.parse(req.body);
@@ -167,6 +172,51 @@ function validateToken(req, res, next) {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return failure(res, 401, "Error Occurred", "Authentication required");
   }
+
+  const token = authHeader.substring(7);
+
+  try {
+    const verifyToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+    if (verifyToken) {
+      next();
+    } else {
+      return failure(res, 500, "Error Occurred", "Authentication required");
+    }
+  } catch (err) {
+    return failure(res, 500, "Error Occurred", "Authentication required");
+  }
 }
 
-module.exports = { validateSignupData, validateLoginData, validateToken };
+function validateUserToken(req, res, next) {
+  const authHeader = req.header("Authorization");
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return failure(res, 401, "Error Occurred", "Authentication required");
+  }
+
+  const token = authHeader.substring(7);
+
+  try {
+    const verifyToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+    if (verifyToken) {
+      if (verifyToken.role === "user") {
+        next();
+      } else {
+        return failure(res, 500, "Error Occurred", "Authentication required");
+      }
+    } else {
+      return failure(res, 500, "Error Occurred", "Authentication required");
+    }
+  } catch (err) {
+    return failure(res, 500, "Error Occurred", "Authentication required");
+  }
+}
+
+module.exports = {
+  validateSignupData,
+  validateLoginData,
+  validateToken,
+  validateUserToken,
+};

@@ -161,4 +161,12 @@ function validateRestaurantData(req, res, next) {
   next();
 }
 
+function validateToken(req, res, next) {
+  const authHeader = req.header("Authorization");
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return failure(res, 401, "Error Occurred", "Authentication required");
+  }
+}
+
 module.exports = { validateSignupData, validateLoginData };

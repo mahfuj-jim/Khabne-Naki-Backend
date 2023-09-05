@@ -59,8 +59,8 @@ class AuthController {
         password: hashedPassword,
         verified: false,
         role: role,
-        user: role === 1 ? id : undefined,
-        restaurant: role === 2 ? id : undefined,
+        user: role === 1 ? id : null,
+        restaurant: role === 2 ? id : null,
       };
 
       await AuthModel.create(newAuth)

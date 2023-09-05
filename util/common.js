@@ -48,7 +48,10 @@ const generateRestaurantToken = async (restaurant) => {
       },
       role: "restaurant",
     },
-    process.env.ACCESS_TOKEN_SECRET
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: "10m",
+    }
   );
 
   return token;
@@ -66,7 +69,10 @@ const generateUserToken = async (user) => {
       },
       role: "user",
     },
-    process.env.ACCESS_TOKEN_SECRET
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: "10m",
+    }
   );
 
   return token;

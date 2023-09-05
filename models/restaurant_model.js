@@ -38,7 +38,7 @@ const restaurantSchema = new mongoose.Schema(
     },
     menu: [mongoose.Schema.Types.Mixed],
     rating: Number,
-    review: String,
+    review: [mongoose.Schema.Types.Mixed],
     website: String,
   },
   {

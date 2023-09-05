@@ -84,6 +84,45 @@ class AuthController {
       return failure(res, 500, "Failed to signup", "Internal server error");
     }
   }
+
+  async login(req, res) {
+    try {
+      const { email, password } = JSON.parse(req.body);
+
+      AuthModel.findOne({ email })
+        .populate("user")
+        .populate("restaurant")
+        .exec()
+        .then(async (auth) => {
+          const isPasswordValid = await bcrypt.compare(password, auth.password);
+
+          if (!isPasswordValid) {
+            return failure(res, 401, "Login failed", "Invalid Credential");
+          }
+
+          let responseData, token;
+
+          if (auth.role === 1) {
+            token = await generateUserToken(auth.user);
+            responseData = auth.user;
+          } else if (auth.role === 2) {
+            token = await generateRestaurantToken(auth.restaurant);
+            responseData = auth.restaurant;
+          }
+
+          return success(res, "Authentication successful", {
+            token: token,
+            data: responseData,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          return failure(res, 401, "Login failed", "Invalid Credential");
+        });
+    } catch (err) {
+      return failure(res, 500, "Failed to signup", "Internal server error");
+    }
+  }
 }
 
 module.exports = new AuthController();

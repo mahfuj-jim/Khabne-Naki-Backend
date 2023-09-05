@@ -1,6 +1,5 @@
 const RestaurantController = require("../controllers/restaurant_controller.js");
 const {
-  validateToken,
   validateUserToken,
   validateRestaurantViewToken,
 } = require("../middleware/auth_validation.js");
@@ -16,6 +15,11 @@ router.get(
   "/all/:restaurantId",
   validateRestaurantViewToken,
   RestaurantController.getRestaurantById
+);
+router.post(
+  "/review/:restaurantId",
+  validateUserToken,
+  RestaurantController.addRestaurantReview
 );
 
 module.exports = router;

@@ -115,7 +115,7 @@ class AuthController {
               const blockUntil = new Date(Date.now() + 5 * 60 * 1000);
               auth.blockUntil = blockUntil;
               auth.loginAttempts = 0;
-              
+
               await auth.save();
               return failure(
                 res,

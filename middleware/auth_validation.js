@@ -207,7 +207,9 @@ function validateUserToken(req, res, next) {
     const verifyToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
     if (verifyToken) {
-      if (verifyToken.role === "user") {
+      const decodedToken = jwt.decode(token);
+
+      if (decodedToken.role === "user") {
         next();
       } else {
         return failure(res, 500, "Error Occurred", "Authentication required");
@@ -240,9 +242,11 @@ function validateRestaurantViewToken(req, res, next) {
     const { restaurantId } = req.params;
 
     if (verifyToken) {
-      if (verifyToken.role === "user") {
+      const decodedToken = jwt.decode(token);
+
+      if (decodedToken.role === "user") {
         next();
-      } else if (verifyToken.restaurant._id === restaurantId) {
+      } else if (decodedToken.restaurant._id === restaurantId) {
         next();
       } else {
         return failure(res, 500, "Error Occurred", "Authentication required");

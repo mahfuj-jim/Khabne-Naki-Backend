@@ -68,6 +68,27 @@ class RestaurantController {
       return failure(res, 500, "Failed to get data", "Internal server error");
     }
   }
+
+  async addRestaurantReview(req, res){
+    try{
+      const { restaurantId } = req.params;
+
+      RestaurantModel.findOne({ _id: restaurantId })
+        .then((restaurant) => {
+          return success(res, "Successfully Received.", restaurant);
+        })
+        .catch((error) => {
+          return failure(
+            res,
+            400,
+            "Failed to add review",
+            "Restaurant not found"
+          );
+        });
+    }catch(err){
+      return failure(res, 500, "Failed to add review", "Internal server error");
+    }
+  }
 }
 
 module.exports = new RestaurantController();

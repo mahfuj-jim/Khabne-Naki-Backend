@@ -169,4 +169,4 @@ function validateToken(req, res, next) {
   }
 }
 
-module.exports = { validateSignupData, validateLoginData };
+module.exports = { validateSignupData, validateLoginData, validateToken };

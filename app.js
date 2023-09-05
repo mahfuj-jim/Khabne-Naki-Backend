@@ -4,6 +4,7 @@ const { failure } = require("./util/common.js");
 const { databaseConnection } = require("./config/database.js");
 const userRoutes = require("./routes/user_routes.js");
 const authRoutes = require("./routes/auth_routes.js");
+const restaurantRoutes = require("./routes/restaurant_routes.js");
 
 const PORT = 8000;
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.text());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/user", userRoutes);
+app.use("/restaurant", restaurantRoutes);
 app.use("/auth", authRoutes);
 
 app.use((req, res) => {

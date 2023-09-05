@@ -41,6 +41,14 @@ const authSchema = new mongoose.Schema(
         return this.role === 2;
       },
     },
+    loginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    blockUntil: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

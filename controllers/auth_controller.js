@@ -94,11 +94,43 @@ class AuthController {
         .populate("restaurant")
         .exec()
         .then(async (auth) => {
+          if (auth.blockUntil && auth.blockUntil > new Date()) {
+            const remainingTimeInSeconds = Math.ceil(
+              (auth.blockUntil - new Date()) / 1000
+            );
+            return failure(
+              res,
+              401,
+              "Login failed",
+              `Account is blocked. Try again in ${remainingTimeInSeconds} seconds.`
+            );
+          }
+
           const isPasswordValid = await bcrypt.compare(password, auth.password);
 
           if (!isPasswordValid) {
+            auth.loginAttempts = (auth.loginAttempts || 0) + 1;
+
+            if (auth.loginAttempts >= 5) {
+              const blockUntil = new Date(Date.now() + 5 * 60 * 1000);
+              auth.blockUntil = blockUntil;
+              auth.loginAttempts = 0;
+              
+              await auth.save();
+              return failure(
+                res,
+                401,
+                "Login failed",
+                `Invalid Credential. Account is blocked for 5 minutes.`
+              );
+            }
+
+            await auth.save();
             return failure(res, 401, "Login failed", "Invalid Credential");
           }
+
+          auth.loginAttempts = 0;
+          await auth.save();
 
           let responseData, token;
 
